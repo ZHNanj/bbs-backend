@@ -2,6 +2,7 @@ package main
 
 // 导入 Gin 框架
 import (
+	middlewares "bbs-backend/middleware"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -9,6 +10,9 @@ import (
 func main() {
 	// 创建一个默认的 Gin 路由器，包括 Logger 和 Recovery 中间件。
 	r := gin.Default()
+
+	// 配置跨域
+	r.Use(middlewares.Cors())
 
 	// 定义路由规则，当 HTTP GET 请求匹配到 URL 路径 /health 时。执行作为参数的请求函数。gin.Context 参数封装了 HTTP 请求的所有详细信息和构造响应的方法。
 	r.GET("/health", func(context *gin.Context) {
