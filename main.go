@@ -2,12 +2,18 @@ package main
 
 // 导入 Gin 框架
 import (
+	"bbs-backend/config"
 	middlewares "bbs-backend/middleware"
+	"bbs-backend/repository"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func main() {
+	// 连接数据库
+	cfg := config.New()
+	repository.InitDB(cfg)
+
 	// 创建一个默认的 Gin 路由器，包括 Logger 和 Recovery 中间件。
 	r := gin.Default()
 
