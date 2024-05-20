@@ -5,7 +5,12 @@ import (
 	"bbs-backend/config"
 	middlewares "bbs-backend/middleware"
 	"bbs-backend/repository"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"log"
 	"net/http"
 )
 
@@ -13,6 +18,24 @@ func main() {
 	// 连接数据库
 	cfg := config.New()
 	repository.InitDB(cfg)
+
+	// 配置数据库版本控制
+	m, err := migrate.New(
+		"file://db/migrations",
+		fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			cfg.DBUser,
+			cfg.DBPassword,
+			cfg.DBHost,
+			cfg.DBPort,
+			cfg.DBName,
+		),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal(err)
+	}
 
 	// 创建一个默认的 Gin 路由器，包括 Logger 和 Recovery 中间件。
 	r := gin.Default()
